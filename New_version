@@ -1,0 +1,288 @@
+import sys
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLineEdit, QFileDialog, QPushButton, QGridLayout, QMessageBox, QLabel, QComboBox
+import os
+import random
+import string
+import xlrd
+
+
+
+
+def __edit_photo_(save_path,photo_path,name,data):
+  try:
+     from PIL import Image
+     from PIL import ImageDraw
+     from PIL import ImageFont
+     import random
+     from datetime import datetime,timedelta
+
+     i = 0
+     while i <= len(photo_path) - 1 :
+        year, mouth, day = data[i].split(' ')[0].split(".")
+        hour, minute, second = data[i].split(' ')[1].split(":")
+        data[i] = str(year)+"."+str(mouth)+"."+str(day)+" "+str(hour)+":"+str(int(minute) + random.randint(-5, 5) )+ ":" + str(second)
+        print("Сейчас идёт файл:  " + name[i])
+        im = Image.open(photo_path[i])
+        w, h = im.size
+        #if w > h:
+        #    im.transpose(Image.ROTATE_90).save(photo_path[i])
+
+
+
+
+        #im.transpose(Image.ROTATE_90).save(photo_path[i])
+        random_X = "{0:0=2d}".format(random.randint(86400, 86449))
+        random_Y = "{0:0=2d}".format(random.randint(65121, 65129))
+        #namefile = random.randint(0, 9999999999999)
+        im = Image.open(photo_path[i])
+        draw_text = ImageDraw.Draw(im)
+        font = ImageFont.truetype(r'C:\Windows\Fonts\times.ttf', size=50)
+
+        draw_text.rectangle(((w - (700)), 0, w, h - (h - 120)), fill=(0,0,0,128))
+        draw_text.text(
+            (w - (700) , h - (h - 10)),
+            'Дата: ' + data[i],
+            font=font,
+            fill='white')
+        draw_text.text(
+            (w - (700), h - (h - 60)),
+            'Геопозиция: ' + '55.' + str(random_X) + " , " + "37." + str(random_Y),
+            font=font,
+            fill='white')
+
+        #---------------------------------------
+        #im.transpose(Image.ROTATE_90)
+        im.save(str(save_path) + '/' + name[i] + '.jpg')
+        i = i + 1
+  except Exception as e:
+      print(e)
+
+import random
+import string
+import xlrd
+
+
+def read_xls(path, sheet_name):
+    def data_format(data):
+        date, time = str(data).split(" ")
+        return date.replace("-", ".") + " " + time[:-2] + str(random.choice(string.digits[:6])) + \
+               str(random.choice(string.digits))
+
+    rb = xlrd.open_workbook(path)
+    sheet = rb.sheet_by_name(sheet_name)
+    names = []
+    dates = []
+
+    for i in range(5, sheet.nrows):
+        names.append(sheet.cell_value(rowx=i, colx=2))
+        date = str(xlrd.xldate_as_datetime(sheet.cell_value(rowx=i, colx=7), rb.datemode))
+        dates.append(data_format(date))
+
+    return names, dates
+
+def copy_image(save_path, photo_path, name):
+ try:
+    import shutil
+    path_copy_2 = []
+
+    i = 0
+    while i < len(photo_path):
+        shutil.copy(photo_path[i], save_path + name[i] + '.JPG')
+        path_copy_2.append(save_path + name[i] + '.JPG')
+
+        i = i + 1
+    return path_copy_2
+ except Exception as e:
+     print(e)
+
+def procent_console(txt):
+    print("Выполнено работы: " + str(txt) + " %")
+
+def mega_script(save_path, photo_path, name, data):
+ try:
+    import os
+    import time
+    procent_console(10)
+    name_photos = conv_name(photo_path,data)
+    procent_console(30)
+    photo_path_new = copy_image(save_path, photo_path, name_photos)
+    procent_console(50)
+    __edit_photo_(save_path, photo_path_new, name_photos, data)
+    i = 0
+    procent_console(70)
+    while i < len(photo_path_new):
+
+        year,mouth,day = data[i].split(' ')[0].split(".")
+        hour,minute,second = data[i].split(' ')[1].split(":")
+        if int(hour) >= 22 and int(hour) <= 24:
+            print('Дата после 22 найдена:  '+ data[i])
+            new_hour,new_minute,new_second = str("{0:0=2d}".format(random.randint(8, 10))),\
+                                             str("{0:0=2d}".format(random.randint(0, 59))),\
+                                             str("{0:0=2d}".format(random.randint(0, 59)))
+            data[i] = str(year)+"."+str(mouth)+"."+str("{0:0=2d}".format(int(day)+1))+" "+str(new_hour)+":"\
+                      +str(new_minute)+":"+str(new_second)
+            print('Дата изменена на: ' + data[i])
+        if int(hour) >= 0 and int(hour) < 8:
+            print('Дата с 0 до 8 найдена: '+ data[i])
+            new_hour, new_minute, new_second = str("{0:0=2d}".format(random.randint(8, 10))), \
+                                               str("{0:0=2d}".format(random.randint(0, 59))), \
+                                               str("{0:0=2d}".format(random.randint(0, 59)))
+            data[i] = str(year) + "." + str(mouth) + "." + str(day) + " " + str(new_hour) + ":" \
+                      + str(new_minute) + ":" + str(new_second)
+            print('Дата изменена на: ' + data[i])
+        pattern = '%Y.%m.%d %H:%M:%S'
+        epoch = int(time.mktime(time.strptime(data[i], pattern)))
+        from win32_setctime import setctime
+        setctime(photo_path_new[i], epoch)
+        os.utime(photo_path_new[i], (epoch, epoch))
+        i = i + 1
+    procent_console(100)
+ except Exception as e:
+     print(e)
+
+
+def conv_name(file_path,data):
+    saver = []
+    i = 0
+    while i <= len(file_path)-1:
+      year, mouth, day = data[i].split(' ')[0].split(".")
+      hour, minute, second = data[i].split(' ')[1].split(":")
+      base = os.path.basename(file_path[i])
+      saver.append("IMG_"+year+mouth+day+"_"+hour+minute+second)
+      i = i + 1
+    return saver
+
+
+def get_all_files(rootdir):
+    rootdir = os.path.normcase(rootdir)
+    file_paths = []
+    for dirpath, dirs, files in os.walk(rootdir):
+        for filename in files:
+            if (filename.upper().endswith(".JPG") or filename.upper().endswith(".JPEG") or \
+                filename.upper().endswith(".PNG")) and (not "modified" in dirpath):
+                file_paths.append(os.path.join(dirpath, filename))
+
+    return file_paths
+
+
+def make_photo_array(dir):
+    photos = get_all_files(dir)
+
+    def sort_func(s, begin=-8, end=-4):
+        if s.upper().endswith(".JPG") or s.upper().endswith(".PNG"):
+            file_number = s[begin:end]
+        elif s.upper().endswith(".JPEG"):
+            file_number = s[begin-1:end-1]
+        try:
+            return float(file_number)
+        except:
+            if s.upper().endswith(".JPG") or s.upper().endswith(".PNG"):
+                file_number = s[begin + 1:end]
+            elif s.upper().endswith(".JPEG"):
+                file_number = s[begin:end - 1]
+            return float(file_number)
+
+    return sorted(photos, key=sort_func)
+
+
+
+class App(QMainWindow):  # Окно и виджеты на нем
+
+    def __init__(self):
+        super().__init__()
+        #self.title =
+        self.left = 100
+        self.top = 30
+        self.width = 700
+        self.height = 200
+        self.setWindowTitle("Редактор методанных фото")
+        self.setGeometry(self.left, self.top, self.width, self.height)
+        self.PhotoData = PhotoData()
+        self.setCentralWidget(self.PhotoData)
+        self.show()
+
+
+class PhotoData(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.dates = [] # массив дат, считанных с excel
+        self.photos = []  # массив файлов фоток
+        self.photos_dir = ""
+        self.names = []  # массив новых имен файлов
+        self._create_UI()
+        self.button_open_excel.clicked.connect(self.open_excel)
+        self.button_dir_photo.clicked.connect(self.choose_photo_dir)
+        self.button_process.clicked.connect(self.proccessing)
+
+    def _create_UI(self):
+        self.layout = QGridLayout(self)
+        self.button_open_excel = QPushButton("Открыть файл excel")
+        self.excel_path = QLineEdit()
+        self.excel_path.setEnabled(False)
+        self.combo = QComboBox()
+        self.combo.addItems(["Стабилометр", "Срез", "Компрессия","Консолидация"])
+        self.len_datas = QLabel("Найдено образцов:   ")
+        self.button_dir_photo = QPushButton("Выбрать папку с фото")
+        self.photo_path = QLineEdit()
+        self.photo_path.setEnabled(False)
+        self.len_photo = QLabel("Найдено фото: ")
+        self.button_process = QPushButton("Перебить даты")
+
+        self.layout.addWidget(self.button_open_excel, 0, 0)
+        self.layout.addWidget(self.combo, 0, 1)
+        self.layout.addWidget(self.excel_path, 0, 2)
+        self.layout.addWidget(self.len_datas, 0, 3)
+        self.layout.addWidget(self.button_dir_photo, 1, 0)
+        self.layout.addWidget(self.photo_path, 1, 1, 1, 2)
+        self.layout.addWidget(self.len_photo, 1, 3)
+        self.layout.addWidget(self.button_process, 2, 0)
+
+    def open_excel(self):
+        self.dates = list([])
+        self.names = list([])
+        excel_file = QFileDialog.getOpenFileName(self, 'Open file')[0]
+        if excel_file and excel_file.endswith('.xls'):
+            self.names, self.dates = read_xls(excel_file, self.combo.currentText())
+            self.excel_path.setText(excel_file)
+            self.len_datas.setText("Найдено образцов: " + str(len(self.dates)))
+
+    def choose_photo_dir(self):
+        self.photos_dir = QFileDialog.getExistingDirectory(self, "Select Directory")
+        if self.photos_dir:
+            self.photos = make_photo_array(self.photos_dir)
+
+            self.photo_path.setText(self.photos_dir)
+            self.len_photo.setText("Найдено фото: " + str(len(self.photos)))
+
+    def proccessing(self):
+        if len(self.photos) == 0:
+            m = QMessageBox()
+            m.setText("Отсутствуют фото")
+            m.exec()
+        elif len(self.dates) == 0:
+            m = QMessageBox()
+            m.setText("Отсутствуют образцы")
+            m.exec()
+        else:
+
+            save_path = self.photos_dir + "/modified/"
+
+            if not os.path.exists(save_path):
+                os.mkdir(save_path)
+            #self.names, self.dates = read_xls(self.excel_path, self.combo.currentText())
+            mega_script(save_path, self.photos, self.names, self.dates)
+            # TODO INSERT CODE
+            m = QMessageBox()
+            m.setText("Готово")
+            m.exec()
+
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    # Now use a palette to switch to dark colors:
+    app.setStyle('Fusion')
+    ex = App()
+    sys.exit(app.exec_())
+
+
