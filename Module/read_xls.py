@@ -15,7 +15,7 @@ class read_xls:
     dates = []
 
     for i in range(5, sheet.nrows):
-        names.append(sheet.cell_value(rowx=i, colx=2))
+        names.append(sheet.cell_value(rowx=i, colx=1))
         date = str(xlrd.xldate_as_datetime(sheet.cell_value(rowx=i, colx=7), rb.datemode))
         dates.append(data_format(date))
 
