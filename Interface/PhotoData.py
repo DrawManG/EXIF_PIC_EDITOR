@@ -144,6 +144,7 @@ class PhotoData(QWidget):
             self.len_photo.setText("Найдено фото: " + str(len(self.photos)))
 
     def proccessing(self):
+        
         if self.switch_mode_XLS.isChecked():
             self.mode = 1
         elif self.switch_mode_EXIF.isChecked():
@@ -151,9 +152,9 @@ class PhotoData(QWidget):
 
         try:
             if not self.lineedit_fontsize.text() == "":
-                if int(self.lineedit_fontsize.text()) > 50 or int(self.lineedit_fontsize.text()) < 10:
+                if int(self.lineedit_fontsize.text()) > 55 or int(self.lineedit_fontsize.text()) < 10:
                     m = QMessageBox()
-                    m.setText("У вас не правильно выставлен размер шрифта, он начинается от 10 и заканчивается 50. Если у вас его нет, то поставьте")
+                    m.setText("У вас не правильно выставлен размер шрифта, он начинается от 10 и заканчивается 55. Если у вас его нет, то поставьте")
                     m.exec()
                     return
             else: 
@@ -163,7 +164,7 @@ class PhotoData(QWidget):
                 return
         except: 
                     m = QMessageBox()
-                    m.setText("УФ, не учёл такой момент,ставлю 25 шрифт, шрифт ставится от 10 до 50")
+                    m.setText("УФ, не учёл такой момент,ставлю 25 шрифт, шрифт ставится от 10 до 55")
                     m.exec()
                     self.lineedit_fontsize.setText(str(25))
                     
@@ -182,15 +183,16 @@ class PhotoData(QWidget):
 
             print("exif")
             self.dates = self.exif_dates()
+            self.names = self.self_names_for_exif()
+            print('name: ',self.names,'\ndates: ',self.dates)
             save_path = self.photos_dir + "/modified/"
-            print('dates  ', self.dates)
             m = QMessageBox()
             if not os.path.exists(save_path):
                 os.mkdir(save_path)
             try:
                 mega_script.mega_script(save_path, self.photos, self.names, self.dates,self.lineedit_fontsize.text())
             except Exception as Error:
-                print("Вы засунули фото с EXIF, которые уже были обработаны или это не фотография с камеры! пересмотрите папку с фотографиями. Подробнее: ",Error)
+                #print("Вы засунули фото с EXIF, которые уже были обработаны или это не фотография с камеры! пересмотрите папку с фотографиями. Подробнее: ",Error)
                 m.setText("Вы засунули фото с EXIF, которые уже были обработаны или это не фотография с камеры! Пересмотрите папку с фотографиями. Подробнее: "+ str(Error))
                 m.exec()
             
@@ -210,12 +212,6 @@ class PhotoData(QWidget):
             self.button_open_excel.setEnabled(False)
             self.combo.setEnabled(False)
             self.len_datas.setEnabled(False)
-
-
-
-
-
-
         else:
             if len(self.dates) < len(self.photos):
                 m = QMessageBox()
@@ -238,6 +234,13 @@ class PhotoData(QWidget):
             self.cleaner()
             self.excel_path.setText(old_path)
             self.clean_combo()
+    
+    def self_names_for_exif(self):
+        #i = 0
+        #while i < len(self.photo_path):
+
+            #i+=1
+        return []
 
     def exif_dates(self):
         try:
@@ -245,7 +248,7 @@ class PhotoData(QWidget):
             i=0
             while i < len(self.photos):
                 img = PIL.Image.open(self.photos[i])
-                exif_full = img._getexif()[36868]
+                exif_full = img._getexif()[36867]
                 year_mouth_day,house_minute_second = str(exif_full).split(' ')
                 year_mouth_day = year_mouth_day.replace(":",".")
                 data_base.append(year_mouth_day+" "+house_minute_second)
