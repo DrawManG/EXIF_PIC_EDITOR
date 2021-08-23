@@ -2,10 +2,11 @@
 from sys import path
 
 from PyQt5.QtGui import QIntValidator
+from Module.create_excel import create_excel
 from Module.mega_script import mega_script
 from Module.make_photo_array import make_photo_array
 from Module.read_xls import read_xls
-from PyQt5.QtWidgets import QHBoxLayout, QMainWindow, QApplication, QRadioButton, QVBoxLayout, QWidget, QLineEdit, QFileDialog, QPushButton, QGridLayout, QMessageBox, QLabel, QComboBox
+from PyQt5.QtWidgets import QHBoxLayout, QMainWindow, QApplication, QRadioButton, QVBoxLayout, QWidget, QLineEdit, QFileDialog, QPushButton, QGridLayout, QMessageBox, QLabel, QComboBox, QCheckBox
 import os
 import PIL
 
@@ -50,12 +51,17 @@ class PhotoData(QWidget):
         self.lbl_switch = QLabel("Режимы:")
         self.switch_mode_XLS = QRadioButton("XLS")
         self.switch_mode_EXIF = QRadioButton("EXIF")
+        self.switch_mode_PIC = QCheckBox("ONLY PIC")
+        self.switch_mode_SORT = QCheckBox("Sort")
+
         #self.switch_mode_XLS.setChecked(True)
 
         self.aggregation = QHBoxLayout()
         self.aggregation.addWidget(self.lbl_switch)
         self.aggregation.addWidget(self.switch_mode_XLS)
         self.aggregation.addWidget(self.switch_mode_EXIF)
+        self.aggregation.addWidget(self.switch_mode_PIC)
+        self.aggregation.addWidget(self.switch_mode_SORT)
         
 
         self.layout.addWidget(self.button_open_excel, 0, 0)
@@ -150,6 +156,7 @@ class PhotoData(QWidget):
         elif self.switch_mode_EXIF.isChecked():
             self.mode = 0
 
+
         try:
             if not self.lineedit_fontsize.text() == "":
                 if int(self.lineedit_fontsize.text()) > 55 or int(self.lineedit_fontsize.text()) < 10:
@@ -184,7 +191,6 @@ class PhotoData(QWidget):
             print("exif")
             self.dates = self.exif_dates()
             self.names = self.self_names_for_exif()
-            print('name: ',self.names,'\ndates: ',self.dates)
             save_path = self.photos_dir + "/modified/"
             m = QMessageBox()
             if not os.path.exists(save_path):
@@ -195,7 +201,7 @@ class PhotoData(QWidget):
                 #print("Вы засунули фото с EXIF, которые уже были обработаны или это не фотография с камеры! пересмотрите папку с фотографиями. Подробнее: ",Error)
                 m.setText("Вы засунули фото с EXIF, которые уже были обработаны или это не фотография с камеры! Пересмотрите папку с фотографиями. Подробнее: "+ str(Error))
                 m.exec()
-            
+            create_excel.create_excel(self,self.names,self.dates,save_path,self.combo.currentText())
             m.setText("Готово")
             m.exec()
             old_path = self.excel_path.text()
@@ -223,6 +229,7 @@ class PhotoData(QWidget):
                 os.mkdir(save_path)
             mega_script.mega_script(save_path, self.photos, self.names, self.dates,self.lineedit_fontsize.text())
             m = QMessageBox()
+            
             m.setText("Готово")
             m.exec()
             old_path = self.excel_path.text()
@@ -236,11 +243,14 @@ class PhotoData(QWidget):
             self.clean_combo()
     
     def self_names_for_exif(self):
-        #i = 0
-        #while i < len(self.photo_path):
-
-            #i+=1
-        return []
+        i = 0
+        name_out_path = []
+        while i < len(self.photos):
+            img_path = str(self.photos[i])
+            img_name = img_path.split("\\")[-1]
+            name_out_path.append(img_name.split(".")[0])
+            i+=1
+        return name_out_path
 
     def exif_dates(self):
         try:
