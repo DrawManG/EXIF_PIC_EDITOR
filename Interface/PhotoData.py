@@ -127,6 +127,7 @@ class PhotoData(QWidget):
         self.dates = [] 
         self.photos = []  
         self.photos_dir = ""
+        self.mode_PIC = 0
         self.names = []  
         self.mode = 5
 
@@ -155,6 +156,12 @@ class PhotoData(QWidget):
             self.mode = 1
         elif self.switch_mode_EXIF.isChecked():
             self.mode = 0
+        
+        if self.switch_mode_SORT.isChecked():
+            pass
+
+        if self.switch_mode_PIC.isChecked():
+            self.mode_PIC = 1
 
 
         try:
@@ -187,8 +194,6 @@ class PhotoData(QWidget):
             m.exec()
             return
         elif self.mode == 0:
-
-            print("exif")
             self.dates = self.exif_dates()
             self.names = self.self_names_for_exif()
             save_path = self.photos_dir + "/modified/"
@@ -196,7 +201,7 @@ class PhotoData(QWidget):
             if not os.path.exists(save_path):
                 os.mkdir(save_path)
             try:
-                mega_script.mega_script(save_path, self.photos, self.names, self.dates,self.lineedit_fontsize.text())
+                mega_script.mega_script(save_path, self.photos, self.names, self.dates,self.lineedit_fontsize.text(),self.mode_PIC)
             except Exception as Error:
                 #print("Вы засунули фото с EXIF, которые уже были обработаны или это не фотография с камеры! пересмотрите папку с фотографиями. Подробнее: ",Error)
                 m.setText("Вы засунули фото с EXIF, которые уже были обработаны или это не фотография с камеры! Пересмотрите папку с фотографиями. Подробнее: "+ str(Error))
@@ -227,7 +232,7 @@ class PhotoData(QWidget):
             save_path = self.photos_dir + "/modified/"
             if not os.path.exists(save_path):
                 os.mkdir(save_path)
-            mega_script.mega_script(save_path, self.photos, self.names, self.dates,self.lineedit_fontsize.text())
+            mega_script.mega_script(save_path, self.photos, self.names, self.dates,self.lineedit_fontsize.text(),self.mode_PIC)
             m = QMessageBox()
             
             m.setText("Готово")
@@ -263,7 +268,6 @@ class PhotoData(QWidget):
                 year_mouth_day = year_mouth_day.replace(":",".")
                 data_base.append(year_mouth_day+" "+house_minute_second)
                 i+=1
-            print('dates  ',self.dates)
             return data_base
         except Exception as Error:
             print("В списке картинок, есть картинка, которая не имеет Exif. Подробнее: ",Error)

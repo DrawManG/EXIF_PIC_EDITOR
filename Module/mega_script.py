@@ -8,10 +8,9 @@ import os
 import time
 
 class mega_script:
- def mega_script(save_path, photo_path, name, data,lineedit_fontsize):
+ def mega_script(save_path, photo_path, name, data,lineedit_fontsize,mode_pic):
     i=0
     while i < len(photo_path):
-        print("data",data)
         print('до изменения  ' +str(data[i]))
         converted_date = datetime.datetime.strptime(data[i], '%Y.%m.%d %H:%M:%S')
         converted_date = converted_date + datetime.timedelta(minutes=random.randint(2,5))
@@ -43,7 +42,8 @@ class mega_script:
         i=i+1
     name_photos = conv_name.conv_name(photo_path,data) 
     photo_path_new = copy_image.copy_image(save_path, photo_path, name_photos)
-    edit_photo.edit_photo(save_path, photo_path_new, name_photos, data,lineedit_fontsize)
+    if not mode_pic == 1:
+        edit_photo.edit_photo(save_path, photo_path_new, name_photos, data,lineedit_fontsize)
     i = 0
     while i < len(photo_path_new):
         pattern = '%Y.%m.%d %H:%M:%S'
