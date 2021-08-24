@@ -4,7 +4,7 @@ class conv_name:
   def conv_name(file_path,data):
     saver = []
     i = 0
-    while i <= len(file_path)-1:
+    while i <= len(data)-1:
 
 
       year, mouth, day = data[i].split(' ')[0].split(".")

@@ -4,6 +4,7 @@ from openpyxl import Workbook , load_workbook
 class create_excel:
     
     def create_excel(self,Name,Data,folder,type_sheet):
+        
         from datetime import datetime
         import xlwt
         workbook = xlwt.Workbook('1.xls')

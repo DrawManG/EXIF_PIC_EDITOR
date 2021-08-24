@@ -1,6 +1,7 @@
 from Module.copy_image import copy_image
 from Module.conv_name import conv_name
 from Module.edit_photo import edit_photo
+from Module.Sort import sort_massive
 
 import datetime
 import random
@@ -8,9 +9,48 @@ import os
 import time
 
 class mega_script:
- def mega_script(save_path, photo_path, name, data,lineedit_fontsize,mode_pic):
+ def mega_script(save_path, photo_path, name, data,lineedit_fontsize,mode_pic,mode_sort,name_files):
+    w = 0
+    print('dir',len(photo_path))
+    name_files = []
+    while w<len(photo_path):
+        name_files.append(str(photo_path[w]).split("\\")[-1].split('.')[0])
+        w+=1
+    print("----------2000")
+    print('photo_path',photo_path)
+    print('name_files ',name_files)
+    print('data ',data)
+    print('name ',name)
+
+
+    print('--1-232847012701241=2', name,name_files)
+    
+
+    if mode_sort == 1:
+            
+            _id,name,data,rubbish = sort_massive.sort_massive(name_files,name,data) #TODO НУЖНА ОТДЕЛЬНАЯ ПЕРЕМЕННАЯ ДЛЯ ИМЕНИ ЕКСЕЛЬ И ИМЕНИ СБОРКИ ФАЙЛОВ
+            photo_path_demo = []
+            i = 0
+            while i < len(_id):
+                photo_path_demo.append(photo_path[_id[i]])
+                
+                i +=1
+            photo_path = photo_path_demo
+            print('Ненайдены в Excel: ',rubbish)
+            w = 0
+            print('dir',len(photo_path))
+            name_files = []
+            while w<len(photo_path):
+                name_files.append(str(photo_path[w]).split("\\")[-1].split('.')[0])
+                w+=1
+
+        
     i=0
+    print('len name_files ',len(name_files))
+    print('len data ',len(data))
+    print('len name ',len(name))
     while i < len(photo_path):
+        print('сейчас идёт:', i,"путей",len(photo_path))
         print('до изменения  ' +str(data[i]))
         converted_date = datetime.datetime.strptime(data[i], '%Y.%m.%d %H:%M:%S')
         converted_date = converted_date + datetime.timedelta(minutes=random.randint(2,5))
@@ -42,6 +82,7 @@ class mega_script:
         i=i+1
     name_photos = conv_name.conv_name(photo_path,data) 
     photo_path_new = copy_image.copy_image(save_path, photo_path, name_photos)
+
     if not mode_pic == 1:
         edit_photo.edit_photo(save_path, photo_path_new, name_photos, data,lineedit_fontsize)
     i = 0
@@ -52,3 +93,5 @@ class mega_script:
         setctime(photo_path_new[i], epoch)
         os.utime(photo_path_new[i], (epoch, epoch))
         i = i + 1
+    return photo_path,name,data,rubbish
+    

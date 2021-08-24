@@ -15,7 +15,7 @@ class edit_photo():
 
     def edit_photo(save_path,photo_path,name,data,lineedit_fontsize):
         i = 0
-        while i <= len(photo_path) - 1 :
+        while i < len(photo_path):
             print("Сейчас идёт файл:  " + name[i])
             
             im = Image.open(photo_path[i])
