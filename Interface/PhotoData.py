@@ -2,7 +2,6 @@
 from sys import path
 
 from PyQt5.QtGui import QIntValidator
-
 from Module.create_excel import create_excel
 from Module.mega_script import mega_script
 from Module.make_photo_array import make_photo_array
@@ -25,7 +24,7 @@ class PhotoData(QWidget):
         self.mode_PIC = 0
         self.mode_SORT = 0
         self._create_UI()
-        self.mode = 5
+        self.mode = 1
         self.button_open_excel.clicked.connect(self.open_excel)
         self.button_dir_photo.clicked.connect(self.choose_photo_dir)
         self.button_process.clicked.connect(self.proccessing)
@@ -58,6 +57,8 @@ class PhotoData(QWidget):
         self.switch_mode_EXIF = QRadioButton("EXIF")
         self.switch_mode_PIC = QCheckBox("ONLY PIC")
         self.switch_mode_SORT = QCheckBox("Sort")
+        #self.switch_mode_EXIF.setChecked(True)
+        self.switch_mode_XLS.setChecked(True)
 
         #self.switch_mode_XLS.setChecked(True)
 
@@ -210,24 +211,35 @@ class PhotoData(QWidget):
             m.setText("Отсутствуют образцы")
             m.exec()
             return
-        elif self.mode == 0:
+        elif self.mode == 0: # exif TODO
             self.dates = self.exif_dates()
             self.names_FILES = self.self_names_for_exif()
             save_path = self.photos_dir + "/modified/"
-            m = QMessageBox()
+            
             if not os.path.exists(save_path):
                 os.mkdir(save_path)
                 
-            try:
-                self.names_FILES == self.names
-                self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
-            except Exception as Error:
-                #print("Вы засунули фото с EXIF, которые уже были обработаны или это не фотография с камеры! пересмотрите папку с фотографиями. Подробнее: ",Error)
-                m.setText("Вы засунули фото с EXIF, которые уже были обработаны или это не фотография с камеры! Пересмотрите папку с фотографиями. Подробнее: "+ str(Error))
+
+            if not self.mode_SORT == 0:
+                self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish,self._id,self.megascript_path_new = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
+                i = 0
+                self.old_name = []
+                print('test   ',self._id,self.megascript_path_new)
+                while i < len(self.megascript_path_new):
+                    print(i,len(self._id),self._id,self.megascript_path_new)
+                    self.old_name.append(str(self.megascript_path_new[i]).split("/")[-1].split(".")[0])
+                    i+=1 
+                create_excel.create_excel(self,self.megascript_name,self.megascript_data,save_path,self.combo.currentText(),self.old_name)
+                m = QMessageBox()
+                m.setText("Готово, не найдено в файле Excel: "+str(self.megascript_rubbish))
                 m.exec()
-            create_excel.create_excel(self,self.names_FILES,self.dates,save_path,self.type_sheep)
-            m.setText("Готово, не найдено в файле Excel: "+str(self.megascript_rubbish))
-            m.exec()
+            else:
+                self.names = self.names_FILES
+                mega_script.mega_script(save_path, self.photos, self.names_FILES , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
+                create_excel.create_excel(self,self.names_FILES,self.dates,save_path,"EXIF",self.names_FILES)
+                m = QMessageBox()
+                m.setText("Готово")
+                m.exec()
             print("----------")
             print('self.names ',self.names)
             print('self.names_FILES',self.names_FILES)
@@ -260,9 +272,19 @@ class PhotoData(QWidget):
             save_path = self.photos_dir + "/modified/"
             if not os.path.exists(save_path):
                 os.mkdir(save_path)
-            self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
+            self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish,self._id,self.megascript_path_new = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
             m = QMessageBox()
-            create_excel.create_excel(self,self.megascript_name,self.megascript_data,save_path,self.type_sheep)
+            i = 0
+            self.old_name = []
+            print('test   ',self._id,self.megascript_path_new)
+            while i < len(self.megascript_path_new):
+                
+                    print(i,len(self._id),self._id,self.megascript_path_new)
+                    self.old_name.append(str(self.megascript_path_new[i]).split("/")[-1].split(".")[0])
+                    i+=1 
+
+            print(self.old_name)
+            create_excel.create_excel(self,self.megascript_name,self.megascript_data,save_path,self.combo.currentText(),self.old_name)
             m.setText("Готово, не найдено в файле Excel: "+str(self.megascript_rubbish))
             m.exec()
             print("----------")
@@ -282,6 +304,9 @@ class PhotoData(QWidget):
             self.cleaner()
             self.excel_path.setText(old_path)
             self.clean_combo()
+
+
+        
     
     def self_names_for_exif(self):
         i = 0

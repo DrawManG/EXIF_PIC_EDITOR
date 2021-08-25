@@ -13,11 +13,10 @@ from PIL import ImageOps
 class edit_photo():
     
 
-    def edit_photo(save_path,photo_path,name,data,lineedit_fontsize):
+    def edit_photo(save_path,photo_path,name,data,lineedit_fontsize,mode_pic):
         i = 0
         while i < len(photo_path):
             print("Сейчас идёт файл:  " + name[i])
-            
             im = Image.open(photo_path[i])
             im = ImageOps.exif_transpose(im)
             w, h = im.size
@@ -42,19 +41,21 @@ class edit_photo():
             rus_date = ['','янв.', 'фев.', 'мар.', 'апр.', 'май', 'июн.', 'июл.', 'авг.', 'сен.', 'окт.', 'ноя.', 'дек.']
             print(str(d) + " " + str(rus_date[int(m)]) + " " + str(y) + " " + "г.," + " " + str(time_rl))
             random_last = random.randint(2, 3)
-
-            draw_text.text(
+            if not mode_pic == 1:
+                draw_text.text(
                     (w - (w/3+padding)-(size*500/70)  , h - (h - size - 5 )),
                     str(d) + " " + str(rus_date[int(m)]) + " " + str(y) + " " + "г.," + " " + str(time_rl) +"\n"+bad_Cordinates + str(random_last) + '"' + "\n" + datacenter_coordinates,
                     font=font,
                     fill='black')
-            draw_text.text(
+                draw_text.text(
                     (w - (w/3+padding)-(size*500/70)+4, h - (h - size - 5)),
                     str(d) + " " + str(rus_date[int(m)]) + " " + str(y) + " " + "г.," + " " + str(time_rl) +"\n"+bad_Cordinates + str(random_last) + '"' + "\n" + datacenter_coordinates,
                     font=font,
                     fill='white')
+            
         
             im.save(str(save_path) + '/' + name[i] + '.jpg')
             i = i + 1
+            
     
 

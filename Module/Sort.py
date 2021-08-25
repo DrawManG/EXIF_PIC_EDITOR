@@ -16,7 +16,7 @@ class sort_massive:
             else:     
                 handpicked_ID.append(ID)
                 handpicked_NAME.append(Names[ID])
-                handpicked_TIME.append(Base_time[output[0]])    
+                handpicked_TIME.append(Base_time[output[0]]) 
             ID +=1   
         print("SORTED: ", handpicked_ID,handpicked_NAME,handpicked_TIME)
         print("MUSOR: ",rubbish)
