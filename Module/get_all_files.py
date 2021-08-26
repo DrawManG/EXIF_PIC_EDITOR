@@ -9,5 +9,4 @@ class get_all_files:
             if (filename.upper().endswith(".JPG") or filename.upper().endswith(".JPEG") or \
                 filename.upper().endswith(".PNG")) and (not "modified" in dirpath):
                 file_paths.append(os.path.join(dirpath, filename))
-
     return file_paths

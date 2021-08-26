@@ -86,12 +86,14 @@ class PhotoData(QWidget):
         self.button_open_excel.setEnabled(False)
         self.combo.setEnabled(False)
         self.len_datas.setEnabled(False)
+        self.switch_mode_SORT.setEnabled(False)
  
     
     def switch_modeX(self):
         self.button_open_excel.setEnabled(True)
         self.combo.setEnabled(True)
         self.len_datas.setEnabled(True)
+        self.switch_mode_SORT.setEnabled(True)
 
     def clean_combo(self):
         try:
@@ -121,7 +123,7 @@ class PhotoData(QWidget):
         self.photos = []  
         self.photos_dir = ""
         self.names = []  
-        self.mode = 5
+
 
 
     def cleaner(self):
@@ -134,7 +136,6 @@ class PhotoData(QWidget):
         self.photos = []  
         self.photos_dir = ""
         self.names = []  
-        self.mode = 5
 
 
 
@@ -156,28 +157,25 @@ class PhotoData(QWidget):
             self.len_photo.setText("Найдено фото: " + str(len(self.photos)))
 
     def proccessing(self):
-        
-
         if self.switch_mode_XLS.isChecked() == True:
             if self.switch_mode_SORT.isChecked() == True:
                 self.mode_SORT = 1
-        
-        
-        
+            else:
+                self.mode_SORT = 0
 
-        print('-------',self.switch_mode_XLS.isChecked())
-        
         if self.switch_mode_XLS.isChecked() == True:
             self.mode = 1
-        elif self.switch_mode_EXIF.isChecked() == True:
+        else:
             self.mode = 0
+        if self.switch_mode_EXIF.isChecked() == True:
+            self.mode = 0
+        else:
+            self.mode = 1
         
-
         if self.switch_mode_PIC.isChecked() == True:
             self.mode_PIC = 1
-
-        print("SELF MODE::::::: ",self.mode,self.mode_SORT,self.mode_PIC)
-
+        else:
+            self.mode_PIC = 0
         try:
             if not self.lineedit_fontsize.text() == "":
                 if int(self.lineedit_fontsize.text()) > 55 or int(self.lineedit_fontsize.text()) < 10:
@@ -194,8 +192,7 @@ class PhotoData(QWidget):
                     m = QMessageBox()
                     m.setText("УФ, не учёл такой момент,ставлю 25 шрифт, шрифт ставится от 10 до 55")
                     m.exec()
-                    self.lineedit_fontsize.setText(str(25))
-                    
+                    self.lineedit_fontsize.setText(str(25))            
         if not str(self.lineedit_fontsize.text()) == "":
             self.type_sheep = str(self.lineedit_fontsize.text())
         else:
@@ -212,19 +209,16 @@ class PhotoData(QWidget):
             m.exec()
             return
         elif self.mode == 0: # exif TODO
+            self.mode_SORT = 0
             self.dates = self.exif_dates()
             self.names_FILES = self.self_names_for_exif()
-            save_path = self.photos_dir + "/modified/"
-            
+            save_path = self.photos_dir + "/modified/" 
             if not os.path.exists(save_path):
                 os.mkdir(save_path)
-                
-
             if not self.mode_SORT == 0:
                 self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish,self._id,self.megascript_path_new = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
                 i = 0
                 self.old_name = []
-                print('test   ',self._id,self.megascript_path_new)
                 while i < len(self.megascript_path_new):
                     print(i,len(self._id),self._id,self.megascript_path_new)
                     self.old_name.append(str(self.megascript_path_new[i]).split("/")[-1].split(".")[0])
@@ -240,15 +234,7 @@ class PhotoData(QWidget):
                 m = QMessageBox()
                 m.setText("Готово")
                 m.exec()
-            print("----------")
-            print('self.names ',self.names)
-            print('self.names_FILES',self.names_FILES)
-            print('self.dates ',self.dates)
-            print('self.excel_path ',self.excel_path)
-            print()
-            print()
             old_path = self.excel_path.text()
-            old_path_p = self.photo_path.text()
             self.switch_mode_XLS.setChecked(True)
             self.button_open_excel.setEnabled(True)
             self.combo.setEnabled(True)
@@ -256,7 +242,6 @@ class PhotoData(QWidget):
             self.cleaner()
             self.excel_path.setText(old_path)
             self.clean_combo()
-
             self.switch_mode_EXIF.setChecked(True)
             self.button_open_excel.setEnabled(False)
             self.combo.setEnabled(False)
@@ -276,27 +261,15 @@ class PhotoData(QWidget):
             m = QMessageBox()
             i = 0
             self.old_name = []
-            print('test   ',self._id,self.megascript_path_new)
             while i < len(self.megascript_path_new):
                 
-                    print(i,len(self._id),self._id,self.megascript_path_new)
                     self.old_name.append(str(self.megascript_path_new[i]).split("/")[-1].split(".")[0])
                     i+=1 
 
-            print(self.old_name)
             create_excel.create_excel(self,self.megascript_name,self.megascript_data,save_path,self.combo.currentText(),self.old_name)
             m.setText("Готово, не найдено в файле Excel: "+str(self.megascript_rubbish))
             m.exec()
-            print("----------")
-            print('self.names ',self.names)
-            print('self.names_FILES',self.names_FILES)
-            print('self.dates ',self.dates)
-            print('self.excel_path ',self.excel_path)
-            print()
-            print()
-
             old_path = self.excel_path.text()
-            #old_path_p = self.photo_path.text()
             self.switch_mode_XLS.setChecked(True)
             self.button_open_excel.setEnabled(True)
             self.combo.setEnabled(True)
@@ -304,10 +277,7 @@ class PhotoData(QWidget):
             self.cleaner()
             self.excel_path.setText(old_path)
             self.clean_combo()
-
-
-        
-    
+   
     def self_names_for_exif(self):
         i = 0
         name_out_path = []
