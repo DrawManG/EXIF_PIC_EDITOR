@@ -11,7 +11,7 @@ class App(QMainWindow):
         self.top = 30
         self.width = 700
         self.height = 200
-        self.setWindowTitle("Редактор метаданных фото V.2")
+        self.setWindowTitle("Редактор метаданных фото V.2.2.1")
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.PhotoData = PhotoData()
         self.setCentralWidget(self.PhotoData)

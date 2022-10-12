@@ -18,8 +18,11 @@ class edit_photo():
             if w<h:
                 fixed_width = 3024
                 padding = 50
-            elif w>h:
+            if w>h:
                 fixed_width = 4032
+                padding = -50
+            if w==h:
+                fixed_width = w
                 padding = -50
             width_percent = (fixed_width/ float(w))
             heigt_size = int((float(h) * float(width_percent)))

@@ -56,8 +56,12 @@ class PhotoData(QWidget):
         self.switch_mode_XLS = QRadioButton("XLS")
         self.switch_mode_EXIF = QRadioButton("EXIF")
         self.switch_mode_PIC = QCheckBox("ONLY PIC")
-        self.switch_mode_SORT = QCheckBox("ByName")
+        self.switch_mode_SORT = QCheckBox("Sort")
+        #self.switch_mode_EXIF.setChecked(True)
         self.switch_mode_XLS.setChecked(True)
+
+        #self.switch_mode_XLS.setChecked(True)
+
         self.aggregation = QHBoxLayout()
         self.aggregation.addWidget(self.lbl_switch)
         self.aggregation.addWidget(self.switch_mode_XLS)
@@ -147,19 +151,13 @@ class PhotoData(QWidget):
     def choose_photo_dir(self):
         self.photos_dir = QFileDialog.getExistingDirectory(self, "Select Directory")
         if self.photos_dir:
+
             self.photos = make_photo_array.make_photo_array(self.photos_dir)
 
             self.photo_path.setText(self.photos_dir)
             self.len_photo.setText("Найдено фото: " + str(len(self.photos)))
 
     def proccessing(self):
-        self.megascript_path = []
-        self.megascript_name = []
-        self.megascript_data = []
-        self.megascript_rubbish = []
-        self._id = []
-        self.megascript_path_new = []
-
         if self.switch_mode_XLS.isChecked() == True:
             if self.switch_mode_SORT.isChecked() == True:
                 self.mode_SORT = 1
@@ -193,9 +191,9 @@ class PhotoData(QWidget):
                 return
         except: 
                     m = QMessageBox()
-                    m.setText("УФ, не учёл такой момент,ставлю 25 шрифт, шрифт ставится от 10 до 55")
+                    m.setText("УФ, не учёл такой момент,ставлю 50 шрифт, шрифт ставится от 10 до 55")
                     m.exec()
-                    self.lineedit_fontsize.setText(str(25))            
+                    self.lineedit_fontsize.setText(str(50))
         if not str(self.lineedit_fontsize.text()) == "":
             self.type_sheep = str(self.lineedit_fontsize.text())
         else:
@@ -219,23 +217,23 @@ class PhotoData(QWidget):
             if not os.path.exists(save_path):
                 os.mkdir(save_path)
             if not self.mode_SORT == 0:
-                self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish,self._id,self.megascript_path_new,name_photos = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
+                self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish,self._id,self.megascript_path_new = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
                 i = 0
-                create_excel.create_excel(self,self.megascript_name,self.megascript_data,save_path,self.combo.currentText(),name_photos)
+                self.old_name = []
+                while i < len(self.megascript_path_new):
+                    print(i,len(self._id),self._id,self.megascript_path_new)
+                    self.old_name.append(str(self.megascript_path_new[i]).split("/")[-1].split(".")[0])
+                    i+=1 
+                create_excel.create_excel(self,self.megascript_name,self.megascript_data,save_path,self.combo.currentText(),self.old_name)
                 m = QMessageBox()
-                m.setText("Готово")
+                m.setText("Готово, не найдено в файле Excel: "+str(self.megascript_rubbish))
                 m.exec()
             else:
-                if len(self.names) == 0:
-                    self.names = self.names_FILES
-                    
-                _,_,_,_,_,_,name_photos = mega_script.mega_script(save_path, self.photos, self.names_FILES , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
-                create_excel.create_excel(self,self.names_FILES,self.dates,save_path,"EXIF",name_photos)
+                self.names = self.names_FILES
+                mega_script.mega_script(save_path, self.photos, self.names_FILES , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
+                create_excel.create_excel(self,self.names_FILES,self.dates,save_path,"EXIF",self.names_FILES)
                 m = QMessageBox()
-                if not self.megascript_rubbish == []:
-                    m.setText("Готово! \nНе найдено в файле Excel: \n"+str(self.megascript_rubbish).replace("[","").replace("]",""))
-                else:
-                    m.setText("Готово")
+                m.setText("Готово")
                 m.exec()
             old_path = self.excel_path.text()
             self.switch_mode_XLS.setChecked(True)
@@ -260,7 +258,7 @@ class PhotoData(QWidget):
             save_path = self.photos_dir + "/modified/"
             if not os.path.exists(save_path):
                 os.mkdir(save_path)
-            self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish,self._id,self.megascript_path_new,name_photos = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
+            self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish,self._id,self.megascript_path_new = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
             m = QMessageBox()
             i = 0
             self.old_name = []
@@ -270,10 +268,7 @@ class PhotoData(QWidget):
                     i+=1 
 
             create_excel.create_excel(self,self.megascript_name,self.megascript_data,save_path,self.combo.currentText(),self.old_name)
-            if not self.megascript_rubbish == []:
-                    m.setText("Готово! \nНе найдено в файле Excel: \n"+str(self.megascript_rubbish).replace("[","").replace("]",""))
-            else:
-                    m.setText("Готово")
+            m.setText("Готово, не найдено в файле Excel: "+str(self.megascript_rubbish))
             m.exec()
             old_path = self.excel_path.text()
             self.switch_mode_XLS.setChecked(True)
@@ -283,7 +278,7 @@ class PhotoData(QWidget):
             self.cleaner()
             self.excel_path.setText(old_path)
             self.clean_combo()
-   
+
     def self_names_for_exif(self):
         i = 0
         name_out_path = []

@@ -68,5 +68,5 @@ class mega_script:
     photo_path_new = copy_image.copy_image(save_path, photo_path, name_photos)
     edit_photo.edit_photo(save_path, photo_path_new, name_photos, data,lineedit_fontsize,mode_pic)
     retime_metadata.retime_metadata(photo_path,data,photo_path_new)
-    return photo_path,name,data,rubbish,_id,photo_path_new,name_photos
+    return photo_path,name,data,rubbish,_id,photo_path_new
     
