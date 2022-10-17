@@ -14,19 +14,33 @@
 Код: 
     - Объеденение всего
 """
+from datetime import datetime
 
 class sort_az():
     
     def join(name,data):
+        data = sort_az.datatime_convert(data)
         dictionary = sort_az.create_dictionary(name,data)
+        sorted_dictionary = sort_az.sort_AZ(dictionary)
+
         print(dictionary)
         
-    
+    def datatime_convert(_data):
+        _ = []
+        for dat in range(len(_data)):
+            _.append(datetime.strptime(_data[dat].replace(".","-") , '%d-%m-%Y %H:%M:%S'))
+        return _
     def create_dictionary(name,data):
         _base = {}
         for i in range(len(name)):
             _base[name[i]] = data[i]
         return _base
+    
+    def sort_AZ(dictionary):
+        _base = {}
+
+        return _base
+
 
 
 
