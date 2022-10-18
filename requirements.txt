@@ -1,0 +1,4 @@
+xlrd~=2.0.1
+Pillow~=9.0.1
+PyQt5~=5.15.7
+win32_setctime~=1.1.0

@@ -57,6 +57,7 @@ class PhotoData(QWidget):
         self.switch_mode_EXIF = QRadioButton("EXIF")
         self.switch_mode_PIC = QCheckBox("ONLY PIC")
         self.switch_mode_SORT = QCheckBox("Sort")
+        self.swotch_mode_AZ = QCheckBox("А-Я")
         #self.switch_mode_EXIF.setChecked(True)
         self.switch_mode_XLS.setChecked(True)
 
@@ -68,6 +69,7 @@ class PhotoData(QWidget):
         self.aggregation.addWidget(self.switch_mode_EXIF)
         self.aggregation.addWidget(self.switch_mode_PIC)
         self.aggregation.addWidget(self.switch_mode_SORT)
+        self.aggregation.addWidget(self.swotch_mode_AZ)
         
 
         self.layout.addWidget(self.button_open_excel, 0, 0)
@@ -211,13 +213,14 @@ class PhotoData(QWidget):
             return
         elif self.mode == 0: # exif TODO
             self.mode_SORT = 0
+            self._ = self.switch_mode_SORT.isChecked()
             self.dates = self.exif_dates()
             self.names_FILES = self.self_names_for_exif()
             save_path = self.photos_dir + "/modified/" 
             if not os.path.exists(save_path):
                 os.mkdir(save_path)
             if not self.mode_SORT == 0:
-                self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish,self._id,self.megascript_path_new = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
+                self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish,self._id,self.megascript_path_new = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES,self._)
                 i = 0
                 self.old_name = []
                 while i < len(self.megascript_path_new):
@@ -230,7 +233,7 @@ class PhotoData(QWidget):
                 m.exec()
             else:
                 self.names = self.names_FILES
-                mega_script.mega_script(save_path, self.photos, self.names_FILES , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
+                mega_script.mega_script(save_path, self.photos, self.names_FILES , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES,self._)
                 create_excel.create_excel(self,self.names_FILES,self.dates,save_path,"EXIF",self.names_FILES)
                 m = QMessageBox()
                 m.setText("Готово")
@@ -258,7 +261,7 @@ class PhotoData(QWidget):
             save_path = self.photos_dir + "/modified/"
             if not os.path.exists(save_path):
                 os.mkdir(save_path)
-            self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish,self._id,self.megascript_path_new = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES)
+            self.megascript_path,self.megascript_name,self.megascript_data,self.megascript_rubbish,self._id,self.megascript_path_new = mega_script.mega_script(save_path, self.photos, self.names , self.dates, self.type_sheep,self.mode_PIC,self.mode_SORT,self.names_FILES,self._)
             m = QMessageBox()
             i = 0
             self.old_name = []
