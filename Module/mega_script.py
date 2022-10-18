@@ -7,8 +7,12 @@ import datetime
 import random
 
 class mega_script:
- def mega_script(save_path, photo_path, name, data,lineedit_fontsize,mode_pic,mode_sort,name_files):
+ def mega_script(save_path, photo_path, name, data,lineedit_fontsize,mode_pic,mode_sort,name_files,sort_az):
     w = 0
+    """
+    Осталось написать проверку для sort_az
+    """
+    print("A-Z: ", sort_az) 
     name_files = []
     while w<len(photo_path):
         name_files.append(str(photo_path[w]).split("\\")[-1].split('.')[0])
