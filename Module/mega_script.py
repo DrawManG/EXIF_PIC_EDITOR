@@ -2,7 +2,7 @@ from Module.copy_image import copy_image
 from Module.conv_name import conv_name
 from Module.edit_photo import edit_photo
 from Module.Sort import sort_massive
-from Module.sort_AZ import __sort_az
+from Module.sort_AZ import sort_az 
 from Module.retime_metadata import retime_metadata
 import datetime
 import random
@@ -15,9 +15,20 @@ class mega_script:
     return new name and data
     """
     if key == 1:
-        name,data == __sort_az.sort_az.join(name,data)
+        print("start",data)
+        name,data == sort_az.join(name,data)
+        print("before",data)
+        #for dat in len(range(data)):
+        #    data[dat] = data[dat].strftime("%m.%d.%Y, %H:%M:%S")
+        #print("convert",data)
     return name,data
  def mega_script(save_path, photo_path, name, data,lineedit_fontsize,mode_pic,mode_sort,name_files,sort_az):
+    print("TO TEST: ",save_path,photo_path,name,data,lineedit_fontsize,mode_pic,mode_sort,name_files,sort_az)
+    print("1 save path",save_path)
+    print("2 photo path",photo_path)
+    print("3 name",name)
+    print("4 data",data)
+    print("5 name files",name_files)
     w = 0
     """
     Осталось написать проверку для sort_az
