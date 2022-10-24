@@ -8,33 +8,29 @@ import datetime
 import random
 
 class mega_script:
- def func_sorted(key,name,data):
+ def func_sorted(key,name,data,photo):
     """
     key - this check checkbox("A-Я") = 1[on] or 2[off]
     name and data -> Module.sort_AZ.py -> name and data
     return new name and data
     """
     if key == 1:
-        print("start",data)
-        name,data == sort_az.join(name,data)
-        print("before",data)
+        
+        name,data == sort_az.join(name,data,photo)
+        
         #for dat in len(range(data)):
         #    data[dat] = data[dat].strftime("%m.%d.%Y, %H:%M:%S")
         #print("convert",data)
-    return name,data
+    return name,data,photo
+
  def mega_script(save_path, photo_path, name, data,lineedit_fontsize,mode_pic,mode_sort,name_files,sort_az):
-    print("TO TEST: ",save_path,photo_path,name,data,lineedit_fontsize,mode_pic,mode_sort,name_files,sort_az)
-    print("1 save path",save_path)
-    print("2 photo path",photo_path)
-    print("3 name",name)
-    print("4 data",data)
-    print("5 name files",name_files)
+
     w = 0
     """
     Осталось написать проверку для sort_az
     """
-    
-    name,data = mega_script.func_sorted(sort_az,name,data)
+    #Сортировка по А-Я (дате)
+    name,data,photo_path = mega_script.func_sorted(sort_az,name,data,photo_path)
     name_files = []
     while w<len(photo_path):
         name_files.append(str(photo_path[w]).split("\\")[-1].split('.')[0])
